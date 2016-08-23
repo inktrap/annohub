@@ -1,0 +1,92 @@
+#text {
+    box-shadow: none;
+    border: none;
+    padding: 1px;
+}
+
+.token {
+    border: 1px solid #fe9150;
+    border-radius: 15px;
+    display: inline-block;
+    border-left: none;
+    border-right: none;
+    padding: 15px;
+    margin: 1px;
+}
+
+.token:first-child {
+    border-left: 1px solid #fe9150;
+}
+
+.token:last-child {
+    border-right: 1px solid #fe9150;
+}
+
+.sent {
+    border-radius: 15px;
+    border-color: #fe9150;
+    border-top: none;
+    border-bottom: none;
+    padding: 1.5em 1em;
+    margin-left: -2em;
+}
+
+.tokenizing-menu {
+  margin-left: -250px;
+  left: 250px;
+  width: 250px;
+  /*background: #CCC;*/
+  position: fixed;
+  overflow-y: auto;
+  z-index: 1000;
+  transition: all 0.4s ease 0s;
+  top: 50%;
+  transform: translateY(-50%);
+  display: block;
+}
+
+
+.tokenizing-verb > label, .tokenizing-noun > label{
+  display: inline-block;
+}
+
+.tokenizing-bottom {
+    background-color: white;
+    padding: 20px;
+    clear:both;
+}
+
+.tokenizing-text {
+    display: block;
+    padding-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 85px;
+}
+
+.tokenizing-noun, .tokenizing-verb {
+    background-color: lightblue;
+    padding: 3px 10px 2px 25px;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.submit-button {
+    background-color: white;
+    padding: 15px;
+    margin: 15px;
+    border: 1px solid;
+    border-radius: 15px;
+    clear:both;
+    /*
+    cursor: url('../img/join.svg') !important;
+    */
+}
+
+.active-entity {
+    /*
+     * background-color: #FF8D19;
+     */
+    background-color: #fe9150;
+}
+

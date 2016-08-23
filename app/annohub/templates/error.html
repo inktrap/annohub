@@ -1,0 +1,13 @@
+{% extends "content.html" %}
+{% block title %}Error {{err['code']}}: {{err['message']}}{% endblock %}
+{% block content %}
+<h1>Error: {{err['message']}} ({{err['code']}})</h1>
+<h3>{{err['desc']}}</h3>
+  {% if not err['code'] == 500 %}
+    <p>However, you could <a href="{{url_for('index')}}">go to the main page</a></br>or <a href="{{url_for('page.docs')}}">check out the documentation</a>.</p>
+    <p>❤</p>
+    {%else %}
+    <p>There is not much you can do. Please try again later.</p>
+    <p>❁</p>
+  {% endif %}
+{% endblock %}

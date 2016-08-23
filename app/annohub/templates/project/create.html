@@ -1,0 +1,20 @@
+{% extends "content.html" %}
+{% from 'formMacros.html' import render_form %}
+{% block title %}Create a new project{% endblock %}
+{% block content %}
+    <h1>Let's create your new project!</h1>
+
+    <span class="help">Accurate metadata will give you fewer tokenization and tagging errors.</span>
+
+    <div class="create-form">
+        {{ render_form(form, action_url=url_for('project.create'), action_text='Submit', class_='col-md-6', enctype='multipart/form-data') }}
+    </div>
+    <div class="col-md-6 footnote">
+    <hr>
+    <span class="footnote">[1] If your language is not listet, choose <span class="bg-info">Other</span>.</span>
+    <span class="footnote">[2] Consult the brown corpus for a characterization of it's subgenres.
+    <span class="footnote">[3] Select a tagset, but you may change it later. <a href="{{ url_for('page.docs') }}#tagsets">Which tagset should I choose?</a></span>
+    <span class="footnote">[4] Preprocessing joins hyphens where appropriate and strips whitespaces. <span class="text-info bg-warning">If you know what you are doing, you can additionally strip punctuation-characters on word boundaries.</span> If you are not sure, <a href="{{ url_for('page.docs') }}#preprocessing">read more about preprocessing!</a></span>
+    </div>
+{% endblock %}
+

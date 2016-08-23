@@ -1,0 +1,130 @@
+{% extends "content.html" %}
+{% block title %}Annohub Projects{% endblock %}
+{% block content %}
+
+<div class="container">
+<h2>My Projects</h2>
+<span class="help">These are the projects you created. Choose a project and then do  <span class="bg-info">Your next step</span>. <a class="help" href="{{ url_for('page.docs')}}#how-to">Read more …</a></span>
+{% if tokenization_projects %}
+<div class="container clear top">
+    <table class="table table-striped">
+        <tr>
+            <th>Your next Step</th>
+            <th>Status</th>
+            <th>Title</th>
+            <th>Language</th>
+            <th>Genre</th>
+            <th>Settings</th>
+        </tr>
+            {% for this_project in tokenization_projects %}
+            <tr>
+                {% if this_project.status == 0 %}
+                    <td><a href="{{ url_for('tokenize.index', project_id=this_project.id) }}">Tokenize</a></td>
+                {% elif this_project.status == 1 %}
+                    <td><a href="{{ url_for('manage.annotation', project_id=this_project.id) }}">Add Annotators</a></td>
+                {% elif this_project.status == 2 %}
+                    <td><a href="{{ url_for('manage.index', project_id=this_project.id) }}">Manage Annotators</a></td>
+                {% elif this_project.status == 3 %}
+                    <td><a href="{{ url_for('project.publish', project_id=this_project.id) }}">Publish</a></td>
+                {% elif this_project.status == 4 %}
+                    <td><a href="{{ url_for('project.stats', project_id=this_project.id) }}">Stats</a></td>
+                {% endif %}
+                <td class="text-left">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{this_project.percent}}" aria-valuemin="0" aria-valuemax="100" style="min-width:2em;height:20px; width:{{this_project.percent}}%;">
+                      {{this_project.percent}}%
+                    </div>
+                </td>
+                <td>{{this_project.name}}</td>
+                <td>{{this_project.language.name}}</td>
+                <td>{{this_project.genre.name}}</td>
+                <td>
+                <div class="dropdown project-settings">
+                    <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu_{{this_project.id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <span class="icon-spacing glyphicon glyphicon-cog">
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1_{{this_project.id}}">
+                      {% if this_project.status > 0 %}
+                          <li><a class="dropdown-item" href="{{ url_for('manage.index', project_id=this_project.id) }}">Manage Annotators</a></li>
+                      {% endif %}
+                      <li><a class="dropdown-item" href="{{ url_for('project.export', project_id=this_project.id) }}">Export Project</a></li>
+                      <li role="separator" class="divider"></li>
+                      {% if this_project.status == 0 %}
+                          <li class="bg-danger"><a class="confirm dropdown-item" href="#" data-type="delete-warning" data-confirm="{{ url_for('tokenize.skip', project_id=this_project.id) }}">Skip tokenization</a></li>
+                      {% endif %}
+                      <li class="bg-danger"><a class="confirm dropdown-item" href="#" data-type="delete-warning" data-confirm="{{ url_for('manage.delete', role='creator', project_id=this_project.id) }}">Delete</a></li>
+                      <li class="bg-danger"><a class="dropdown-item" href="{{ url_for('project.transfer', project_id=this_project.id) }}">Transfer ownership</a></li>
+                  </ul>
+                </div>
+                </td>
+            </tr>
+            {% endfor %}
+    </table>
+</div>
+{% else %}
+    <div class="container top col-md6 center-block center-text clear">You did not create any projects yet.</div>
+{% endif %}
+
+<div class="container col-md-6 clear">
+    <a href="{{ url_for('project.create')}}"><span class="btn btn-default btn-default" type="button"><span class="icon-spacing glyphicon glyphicon-plus"></span> Add a new project</span></a>
+</div>
+</div>
+
+<div class="container">
+<h2>Awaiting Annotation</h2>
+<span class="help">The projects below are awaiting your annotation! <a class="help" href="{{ url_for('page.docs')}}#how-to">Read more …</a></span>
+{% if annotation_projects %}
+<div class="container clear top">
+    <table class="table table-striped">
+        <tr>
+            <th>Your next step</th>
+            <th>Status</th>
+            <th>Title</th>
+            <th>Language</th>
+            <th>Genre</th>
+            <th>Creator</th>
+            <th>Tagset</th>
+            <th>Settings</th>
+        </tr>
+    {% for this_project in annotation_projects %}
+        <tr>
+            {% if this_project.status == 0 %}
+                <td><a href="{{ url_for('annotate.index', project_id=this_project.id) }}">Annotate</a></td>
+            {% elif this_project.status == 1 %}
+                <td><a href="{{ url_for('project.stats', project_id=this_project.id) }}">View Stats</a></td>
+            {% else %}
+                <td><a href="#">Generic Action</a></td>
+            {% endif %}
+            <td class="text-left">{# if this_project.status == 100 %}<span class="icon-spacing glyphicon glyphicon-ok"></span>{% endif #}
+                <div class="progress-bar" role="progressbar" aria-valuenow="{{this_project.percent}}" aria-valuemin="0" aria-valuemax="100" style="min-width:2em;height:20px; width:{{this_project.percent}}%;">
+                  {{this_project.percent}}%
+                </div>
+            </td>
+            <td>{{this_project.name}}</td>
+            <td>{{this_project.language.name}}</td>
+            <td>{{this_project.genre.name}}</td>
+            <td>{{this_project.creator.name}}</td>
+            <td>{{this_project.tagset.name}}</td>
+            <td>
+            <div class="dropdown project-settings">
+                <button class="btn btn-default btn-xs dropdown-toggle" type="button" id="dropdownMenu_{{this_project.id}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="icon-spacing glyphicon glyphicon-cog">
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenu1_{{this_project.id}}">
+                  <li><a class="dropdown-item" href="{{ url_for('project.export', project_id=this_project.id) }}">Export Project</a></li>
+                  <li role="separator" class="divider"></li>
+                  {% if this_project.status == 0 %}
+                      <li class="bg-danger"><a class="confirm dropdown-item" href="#" data-type="delete-warning" data-confirm="{{ url_for('annotate.skip', project_id=this_project.id) }}">Skip annotation</a></li>
+                  {% endif %}
+                  <li class="bg-danger"><a class="confirm dropdown-item" href="#" data-type="delete-warning" data-confirm="{{ url_for('manage.delete', role='annotator', project_id=this_project.id) }}">Quit</a></li>
+              </ul>
+            </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% else %}
+<div class="container top col-md6 center-block center-text clear">No projects to annotate. Finish all the steps for at least one of your own projects or get invited by someone else. </div>
+{% endif %}
+{% endblock %}
+</div>

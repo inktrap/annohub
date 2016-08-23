@@ -1,0 +1,174 @@
+{% extends "content.html" %}
+{% block title %}Annohub Annotation Session{% endblock %}
+{% block css %}
+    <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='css/annotate.css') }}">
+{% endblock %}
+{% block content %}
+
+<div class="annotation-gui clear">
+
+
+    <div id="annotation-menu" class="col-md-9 center-block">
+        <div class="annotation-head">
+            <span class="annotation-header">Tag: </span>
+            <span id="annotation-key" class="annotation-value"></span>
+            <span class="annotation-header"> </span>
+            <span id="annotation-description" class="annotation-value"></span>
+            <input id="annotation-search" class="search" placeholder="Search Tags" />
+            <div class="ellipsis"><span class="annotation-header">Examples: </span>
+                <span id="annotation-example" class="annotation-value"></span>
+            </div>
+        </div>
+        <div class="annotation-tags">
+            <ul class="list"></ul>
+        </div>
+    </div>
+
+    <div id="annotation-text" class="annotation-text center-block container col-md-9">
+    </div>
+
+    <div class="annotation-bottom container col-md-9 center-block clear">
+        <input id="annotation-submit" class="btn btn-default pull-left" type="submit" value="Submit and load the next snippet">
+    </div>
+</div>
+{% endblock %} 
+
+{% block js %}
+  <script src="{{ url_for('static', filename='js/annohub-annotate.js') }}" type="text/javascript"></script>
+  <script src="{{ url_for('static', filename='js/lib/list.min.js') }}" type="text/javascript"></script>
+{% endblock %}
+
+{% block onload %}
+  <script>
+    window.onload = function () {
+      var token={{token|tojson|safe}};
+      var annotation={{annotation|tojson|safe}};
+      var tags={{tags|tojson|safe}};
+      var project={{project|tojson|safe}};
+      var ret = [0,0];
+
+      setID(project);
+      renderValues(token, annotation);
+      highlightSentpos(ret);
+      afterIncrement(tags);
+
+      //item: '<li><span class="key"></span><p class=""><span class="description"></span><span class="example"></span></p></span></li>'
+      var options = {
+        valueNames: [ 'key' ],
+        item: '<li><span class="key"></span></li>'
+      };
+      var annotation_list = new List('annotation-menu', options, tags);
+
+      $('.annotation-header').css('visibility','hidden');
+      $('.annotation-value').css('visibility','hidden');
+
+      $('.annotation-tags ul.list > li').on({
+          click: function(event) {
+              // process result here
+              var active_key = getActiveKey();
+              if (active_key !== ""){
+                  annotation = setNewTag(ret, active_key, tags, annotation);
+                  ret = selectNext(ret, tags, annotation_list);
+              }
+          },
+          mouseenter: function (event) {
+            //console.log("mouseover");
+            if ( event.target.tagName === 'SPAN'){
+                var element = $(event.target).parent().first();
+                //console.log(element);
+            } else {
+                var element = $(event.target).first()
+            }
+            var tag = $(element).text();
+            if (last_tag !== tag){
+                // console.log(element);
+                var result = getTag(tags, tag);
+                setTagInfo(result);
+                setActiveKey(element);
+                var last_tag = tag;
+                }
+            },
+        });
+
+        $('#annotation-search').on({
+            keyup: function(event) {
+             if(event.keyCode == 13){
+                 // process result here
+                 if ($(this).val() !== ""){
+                     var active_key = getActiveKey();
+                     if (active_key !== ""){
+                         annotation = setNewTag(ret, active_key, tags, annotation);
+                         ret = selectNext(ret, tags, annotation_list);
+                     }
+                 } else {
+                     ret = selectNext(ret, tags, annotation_list);
+                 }
+             } else {
+                 var searchString = $(this).val();
+                 if (searchString !== lastSearchString){
+                     annotation_list.search(searchString, ['key']);
+                     var tag = $(this).val();
+                     var result = getTag(tags, tag);
+                     //console.log(result);
+                     setTagInfo(result);
+                     if (result !== false){
+                         setActiveKey($('ul.list').children().first());
+                     }
+                     var lastSearchString = searchString;
+                 }
+             }
+        }});
+
+        $(document).on({
+                keyup: function(event){
+                // d and → trigger the selection of the next tag
+                // d 68 → 39 l 76
+                if ($('#annotation-search').is(':focus') === false){
+                    if (event.keyCode == 39 | event.keyCode == 76 | event.keyCode == 68){
+                        ret = selectNext(ret, tags, annotation_list);
+                    }
+                }
+        }});
+
+        // todo process post submit
+        // todo: set and get values
+        $('#annotation-submit').on("click", function(event){
+            var project_id = getID()._id.$oid;
+            $.ajax({
+                type: 'POST',
+                // Provide correct Content-Type, so that Flask will know how to process it.
+                contentType: 'application/json',
+                // Encode data as JSON.
+                data: JSON.stringify({ id: project_id, annotation: annotation, token: token}),
+                // This is the type of data expected back from the server.
+                dataType: 'json',
+                url: $SCRIPT_ROOT + '/annotate/submit/' + project_id
+                })
+                .success(function(ret) {
+                  //console.log(JSON.stringify(ret));
+                  annotation = ret['annotation'];
+                  token = ret['token'];
+                  ret = [0,0];
+                  setID(project);
+                  renderValues(token, annotation);
+                  highlightSentpos(ret);
+                  afterIncrement(tags);
+                })
+                .done(function (ret) {
+                  console.log('Done');
+                })
+                .fail(function (ret) {
+                 if (ret.responseText === "EOF"){
+                     //console.log("EOF!");
+                         window.location = $SCRIPT_ROOT + '/project/';
+                     } else {
+                     showError(ret.responseText);
+                     }
+                 });
+        });
+        /*
+        */
+
+    };
+  </script>
+{% endblock %}

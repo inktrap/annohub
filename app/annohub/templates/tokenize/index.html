@@ -1,0 +1,165 @@
+{% extends "content.html" %}
+{% block title %}Annohub Tokenization Session{% endblock %}
+{% block css %}
+    <link rel="stylesheet" media="screen" href="{{ url_for('static', filename='css/tokenize.css') }}">
+{% endblock %}
+{% block content %}
+
+<div class="tokenizing-gui clear">
+
+    <div class="tokenizing-menu">
+        <div id="tokenizing-verb" class="btn-group" data-toggle="buttons">
+            <label title="Split the selected entity." class="btn btn-primary active"><input type="radio" id="split" name="verb">split<span class="icon-spacing glyphicon glyphicon-scissors"></label>
+            <label title="Delete the selected entity." class="btn btn-primary"><input type="radio" id="delete" name="verb">delete<span class="icon-spacing glyphicon glyphicon-trash"></label>
+            <label title="Join the selected entity with it's successor." class="btn btn-primary"><input type="radio" id="join" name="verb">join<span class="icon-spacing glyphicon glyphicon-resize-small"></label>
+        </div>
+        <div id="tokenizing-noun" class="btn-group" data-toggle="buttons">
+            <label title="Select non alphanumeric characters at token borders." class="btn btn-primary"><input type="radio" id="punct" name="noun">punct</label>
+            <label title="Select a token." class="btn btn-primary active"><input type="radio" id="token" name="noun">token</label>
+            <label title="Select a sentence." class="btn btn-primary"><input type="radio" id="sent" name="noun">sentence</label>
+        </div>
+    </div>
+
+    <div id="tokenizing-text" class="tokenizing-text center-block container col-md-9">
+    </div>
+
+    <div class="tokenizing-bottom container col-md-9 center-block clear">
+        <input id="tokenizing-submit" class="btn btn-default pull-left" type="submit" value="Submit and load the next snippet">
+        <span class="pull-right">
+            <span class="icon-spacing glyphicon glyphicon-plus"></span><a id="tokenizing-add" href="#">The last sentence is incomplete …</a>
+        </span>
+    </div>
+    <!--
+    <div class="container col-md-6 clear ">
+    </div>
+    -->
+</div>
+{% endblock %}
+
+
+{% block footer %}
+{% endblock footer %}
+
+{% block js %}
+  <script src="{{ url_for('static', filename='js/annohub-tokenize.js') }}" type="text/javascript"></script>
+{% endblock %}
+
+{% block onload %}
+  <script>
+    window.onload = function () {
+      initial_text={{text|tojson|safe}};
+      project={{project|tojson|safe}};
+      setValues(initial_text);
+      setID(project);
+      renderValues(getValues());
+
+      $('#tokenizing-text').on("click", function(event){
+          var token = $(event.target).data("token");
+          var sent = $(event.target).closest(".sent").data("sent");
+
+          var verb = getVerb();
+          var noun = getNoun();
+
+          //console.log(token);
+          //console.log(sent);
+
+          if (!(token === undefined  ||
+                  sent === undefined ||
+                  verb === undefined ||
+                  noun === undefined)){
+              main(token, sent, verb, noun);
+              renderValues(getValues());
+              }
+          }
+      );
+
+      $('#tokenizing-submit').on("click", function(event){
+          var project_id = getID()._id.$oid;
+          $.ajax({
+              type: 'POST',
+              // Provide correct Content-Type, so that Flask will know how to process it.
+              contentType: 'application/json',
+              // Encode data as JSON.
+              data: JSON.stringify({ id: project_id, token: getValues()}),
+              // This is the type of data expected back from the server.
+              dataType: 'json',
+              url: $SCRIPT_ROOT + '/tokenize/submit/' + project_id
+              })
+              .success(function(ret) {
+                //console.log(JSON.stringify(ret));
+                setValues(ret);
+                renderValues(getValues());
+              })
+              .done(function (ret) {
+                console.log('Done');
+              })
+              .fail(function (ret) {
+               if (ret.responseText === "EOF"){
+                   //console.log("EOF!");
+                       window.location = $SCRIPT_ROOT + '/project/';
+                       //showSuccess('You finished tokenization!');
+                   } else {
+                   showError(ret.responseText);
+                   }
+               });
+      });
+
+      $('#tokenizing-add').on("click", function(event){
+          var project_id = getID()._id.$oid;
+          $.ajax({
+              type: 'POST',
+              // Provide correct Content-Type, so that Flask will know how to process it.
+              contentType: 'application/json',
+              // Encode data as JSON.
+              data: JSON.stringify({ id: project_id, token: getValues()}),
+              // This is the type of data expected back from the server.
+              dataType: 'json',
+              url: $SCRIPT_ROOT + '/tokenize/add_sentence/' + project_id
+              })
+              .success(function(ret) {
+                setValues(getValues().concat(ret));
+                renderValues(getValues());
+              })
+              .done(function (ret) {
+                console.log('Done');
+              })
+              .fail(function (ret) {
+               if (ret.responseText === "EOF"){
+                   //console.log("EOF!");
+                   showNotice('There are no more sentences. Submit the current snippet!');
+                   } else {
+                   showError(ret.responseText);
+                   }
+               });
+      });
+
+      $(document).on({
+          mouseenter: function (event) {
+              var noun = getNoun();
+              /*console.log(noun);*/
+              if (noun == 'sent'){
+                  $(event.currentTarget).siblings().addClass("active-entity");
+              } else if ((noun == 'token') || (noun == 'punct')){
+                  $(event.currentTarget).addClass("active-entity");
+              }
+          },
+          mouseleave: function (event) {
+              var noun = getNoun();
+              if (noun == 'sent'){
+                  $(event.currentTarget).siblings().removeClass("active-entity");
+              } else if ((noun == 'token') || (noun == 'punct')){
+                  $(event.currentTarget).removeClass("active-entity");
+              }
+          }
+          }, "#tokenizing-text .token");
+
+      /*
+      $('#verbForm').on("change", function(){
+              var verb = getVerb();
+              $('span').css("cursor",  "url(../img/delete.png) 4 12, auto;");
+              }
+              );
+  */
+    }
+  </script>
+{% endblock %} 

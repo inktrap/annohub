@@ -1,0 +1,25 @@
+{# templates/macros.html #}
+
+{% macro nav_link(endpoint, text, this_icon="") %}
+{% if request.endpoint and request.endpoint.endswith(endpoint) %}
+
+{% set icon = '' %}
+
+{# todo: make icons work #}
+{% if this_icon %}
+  {#% set icon = '<i class="navbar-text glyphicon {{icon}}"></i>' %#}
+{% endif %}
+
+<li class="active"><a href="{{ url_for(endpoint) }}">{{icon|safe}}{{text}}</a></li>
+{% else %}
+<li><a href="{{ url_for(endpoint) }}">{{icon|safe}}{{text}}</a></li>
+{% endif %}
+{% endmacro %}
+
+{% macro make_div_start(caller, errors) %}
+{% if caller in errors %}
+  <div id={{caller}}Wrapper class="form-group control-label has-error">
+{% else %}
+  <div id={{caller}}Wrapper class="form-group">
+{% endif %}
+{% endmacro %}

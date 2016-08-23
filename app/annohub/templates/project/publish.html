@@ -1,0 +1,18 @@
+{% extends "content.html" %}
+{% from 'formMacros.html' import render_form %}
+{% block title %}Publish your project{% endblock %}
+{% block content %}
+    <h1>Let's publish your project!</h1>
+
+    <span class="help">Choose a license and privacy settings.</span>
+
+    <div class="create-form">
+        {{ render_form(form, action_url=url_for('project.publish', project_id=project_id), action_text='Submit', class_='col-md-6', enctype='multipart/form-data') }}
+    </div>
+    <div class="col-md-6 footnote">
+    <hr>
+    <span class="footnote">[1] <a href="http://choosealicense.com/">Need help choosing a license?</a>.</span>. I would like to mention that I am not a laywer and have no idea if these licenses apply to corpora. Besides that, this is more complicated (and again, I am not a laywer and have no idea what I am talking about): What if the text that you annotated was published under a different license? What about the license of the tools you created the annotation with? NLTK? Tokenizers and Taggers? The coropora they were trained on? What about the work your annotators put in their annotation? There are more questions than answers here, but I wanted to give you the opportunity to think about a license.
+    <span class="footnote">[2] <code>public</code> projects can be viewed and downloaded by everybody. If your project is not <code>public</code>, it is automatically <code>private</code>, which means that only annotators can view and download it.
+    </div>
+{% endblock %}
+

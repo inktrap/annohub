@@ -1,0 +1,50 @@
+{% extends "content.html" %}
+{% block title %}We Are Annohub!{% endblock %}
+
+{% block jumbotron %}
+<!-- non-mobile div-->
+<div class="jumbotron-bg hidden-xs hidden-sm jumbotron">
+  <div class="jumbotron-transparent img-rounded center-text container">
+    <!--
+    <img class="logo" src="{{ url_for('static', filename='img/annohub-small.svg') }}">
+    -->
+    <!--<span class="caps">annohub</span>:-->
+    <!--
+    <h1>Welcome to</h1>
+    -->
+    <p><span>Welcome to <span class="caps">annohub</span>!</span></p>
+    <img class="center-text" src="{{ url_for('static', filename='img/annohub.svg') }}">
+    <p><span><span class="caps">annohub</span> makes the process of adding linguistic information transparent, consistent and efficient.</span></p>
+    <p><a class="btn btn-primary btn-lg" href="{{url_for('page.docs')}}" role="button">Read more! &raquo;</a></p>
+    <p class="attribution"><a href="https://commons.wikimedia.org/wiki/File:Metal_movable_type.jpg">Image Attribution: Willi Heidelbach</a></p>
+  </div>
+</div>
+<!--mobile div-->
+<div class="visible-xs visible-sm jumbotron">
+  <div class="container">
+    <h2 class="opacity-0">Welcome to Annohub!</h1>
+    <p class="opacity-0"><span class="caps">annohub</span> makes the process of simple annotations more consistent and efficient. The goal is to create comparable, reproducible results that can be easily visualized.</p>
+    <p><a class="btn btn-primary btn-lg" href="{{url_for('page.docs')}}" role="button">Read more! &raquo;</a></p>
+  </div>
+</div>
+{% endblock %}
+{% block content %}
+      <!-- Example row of columns -->
+      <div class="row">
+        <div class="col-md-4">
+          <h2>Easy Interfaces</h2>
+          <p>Prepare and annotate your data in a structured way by using <span class="caps">annohub's</span> interfaces for segmentation and annotation.</p>
+          <p><a class="btn btn-default" href="{{url_for('page.docs')}}#how-to" role="button">Read more! &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+          <h2>Visualization build-in!</h2>
+          <p>You and your team finished annotating? Congrats! Now, visualize the results and export your data to various open formats!</p>
+          <p><a class="btn btn-default" href="{{url_for('page.docs')}}#how-to" role="button">Read more! &raquo;</a></p>
+       </div>
+        <div class="col-md-4">
+          <h2>Share and Use</h2>
+          <p>We encourage that you and your team share your results with others under an open license. This means that you are likely able to view other data as well!</p>
+          <p><a class="btn btn-default" href="{{url_for('page.docs')}}#how-to" role="button">Read more! &raquo;</a></p>
+        </div>
+      </div>
+{% endblock %}

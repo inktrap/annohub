@@ -1,0 +1,32 @@
+{% extends "content.html" %}
+{% from 'formMacros.html' import render_form %}
+{% block title %}Add an annotator!{% endblock %}
+{% block content %}
+    <h1>Remove an annotator</h1>
+
+    <!--
+    <span class="help">Click the button.</span>
+    -->
+
+    <div class="annotator-list col-md-6">
+        <ul>
+            {% for annotator in this_annotators %}
+            <li>{{ annotator.name }} <a href={{url_for('manage.remove', project_id=project_id, user_id=annotator.id) }}>Fire me.</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <h1>Add an annotator</h1>
+
+    <!--
+    <span class="help">Enter the username.</span>
+    -->
+
+    <div class="create-form">
+        {{ render_form(form, action_url=url_for('manage.add', project_id=project_id), action_text='Submit', class_='col-md-6', enctype='multipart/form-data') }}
+    </div>
+
+{% endblock %}
+

@@ -1,0 +1,9 @@
+{% extends "content.html" %}
+{% from 'formMacros.html' import render_form %}
+{% block content %}
+    <h2>Log in</h2>
+    <p>Need to <a href="{{ url_for('auth.signup') }}">sign up</a> first? Or <a href="{{ url_for('auth.reset_password') }}">forgot your password?!</a></p>
+    <div class="login-form">
+        {{ render_form(form, action_url=url_for('auth.login'), action_text='Submit', class_='col-md-6') }}
+    </div>
+{% endblock %}

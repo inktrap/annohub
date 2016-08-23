@@ -1,0 +1,49 @@
+import os
+u''' Define private/secret config here. Put publicstuff into
+app/config.py'''
+
+MAIL_FROM_EMAIL = "example@domain.tld"
+USER_APP_NAME = "Annohub"
+SECRET_KEY = 'example'
+
+#SQLALCHEMY_DATABASE_URI = "mysql+mysqldb://<user>:<password>@<host>[:<port>]/<dbname>"
+#SQLALCHEMY_DATABASE_URI = "mysql+mysqldb://annohub:password@localhost/annohub"
+
+#MONGODB_URI = 'mongodb://admin:@localhost/annohub'
+
+if os.environ.has_key('FLASK_ANNOHUB_TESTING')\
+    and int(os.environ['FLASK_ANNOHUB_TESTING']) == 1:
+    # wether this is a test run via unittest or selenium
+    MONGODB_SETTINGS = {
+        'db': 'testing'
+    }
+else:
+    MONGODB_SETTINGS = {
+        'db': 'example',
+        'username':'example',
+        'password':'example',
+        'host': 'localhost',
+        'port': 0
+    }
+
+# TODO: resetting the db should only work in development mode and should
+# generate a hughe warning message
+SECRET_RESET_DB_TOKEN='example'
+SECRET_SETUP_DB_TOKEN='example'
+SECRET_NLTK_TOKEN='example'
+RESET_DB_URL='/reset/<secret_token>'
+SETUP_DB_URL='/setup/<secret_token>'
+UPDATE_NLTK_URL='/nltk/<secret_token>'
+
+
+CSRF_ENABLED = True
+WTF_CSRF_SECRET_KEY = 'example'
+
+# Flask-Mail settings
+MAIL_USERNAME = "example@domain.tld"
+MAIL_PASSWORD = "example"
+MAIL_DEFAULT_SENDER = 'Annohub "<no-reply@example.tld>"'
+MAIL_SERVER = "smtp.example.com"
+MAIL_PORT =  '465'
+MAIL_USE_SSL = True
+

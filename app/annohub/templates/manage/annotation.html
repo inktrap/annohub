@@ -1,0 +1,13 @@
+{% extends "content.html" %}
+{% from 'formMacros.html' import render_form %}
+{% block title %}Choose a tagset and an annotator before we start tagging.{% endblock %}
+{% block content %}
+    <h1>Manage your project before tagging.</h1>
+
+    <span class="help">You can invite more annotators later, but the tagset you select now can not be changed later.</span>
+
+    <div class="create-form">
+        {{ render_form(form, action_url=url_for('manage.annotation', project_id=project_id), action_text='Submit', class_='col-md-6', enctype='multipart/form-data') }}
+    </div>
+{% endblock %}
+
